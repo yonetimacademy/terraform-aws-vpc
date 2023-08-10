@@ -21,3 +21,7 @@ output "eks_subnet_ids" {
 output "db_subnet_ids" {
 	value = aws_subnet.main_db.*.id
 }
+
+output "lambda_subnet_ids" {
+	value = aws_subnet.main_lambda.*.id
+}

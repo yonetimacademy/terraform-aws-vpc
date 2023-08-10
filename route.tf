@@ -7,7 +7,7 @@ resource "aws_default_route_table" "main_default" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
@@ -30,7 +30,7 @@ resource "aws_route_table" "main_pbl" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
@@ -54,7 +54,7 @@ resource "aws_route_table" "main_pvt" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
@@ -78,7 +78,7 @@ resource "aws_route_table" "main_eks" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
@@ -97,7 +97,31 @@ resource "aws_route_table" "main_db" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
+    Terraform   = "yes"
+  }
+}
+
+##### Create Lambda Route Table
+resource "aws_route_table" "main_lambda" {
+  count  = (length(var.lambda_sub_count) > 0) ? 1 : 0
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = element(aws_nat_gateway.main.*.id, count.index)
+  }
+
+  lifecycle {
+    ignore_changes = [route]
+  }
+
+  tags = {
+    Name        = "${var.tenant}-${var.name}-lambda-route-${var.environment}"
+    Tenant      = var.tenant
+    Project     = var.name
+    Environment = var.environment
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
@@ -128,4 +152,11 @@ resource "aws_route_table_association" "main_db_route_association" {
   count          = length(var.db_sub_count)
   subnet_id      = element(aws_subnet.main_db.*.id, count.index)
   route_table_id = aws_route_table.main_db[0].id
+}
+
+##### Route Table Association for Lambda Subnets
+resource "aws_route_table_association" "main_lambda_route_association" {
+  count          = length(var.lambda_sub_count)
+  subnet_id      = element(aws_subnet.main_lambda.*.id, count.index)
+  route_table_id = element(aws_route_table.main_lambda.*.id, count.index)
 }

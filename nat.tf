@@ -5,7 +5,7 @@ resource "aws_eip" "nat_gateway" {
   depends_on = [aws_internet_gateway.main]
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false # test den sonra true yap
   }
 
   tags = {
@@ -13,7 +13,7 @@ resource "aws_eip" "nat_gateway" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
@@ -36,7 +36,7 @@ resource "aws_nat_gateway" "main" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
-    Maintainer  = "Magicorn"
+    Maintainer  = "yonetimacademy"
     Terraform   = "yes"
   }
 }
